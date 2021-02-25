@@ -7,7 +7,7 @@ from datasets import PascalVOCDataset
 from utils import *
 
 # Data parameters
-data_folder = './'  # folder with data files
+data_folder = 'Conversion\Root\Data\Output'  # folder with data files
 keep_difficult = True  # use objects considered difficult to detect?
 
 # Model parameters
@@ -21,7 +21,7 @@ batch_size = 8  # batch size
 iterations = 120000  # number of iterations to train
 workers = 4  # number of workers for loading data in the DataLoader
 print_freq = 200  # print training status every __ batches
-lr = 1e-3  # learning rate
+lr = 0.0003  # learning rate
 decay_lr_at = [80000, 100000]  # decay learning rate after these many iterations
 decay_lr_to = 0.1  # decay learning rate to this fraction of the existing learning rate
 momentum = 0.9  # momentum
@@ -75,7 +75,7 @@ def main():
     # Calculate total number of epochs to train and the epochs to decay learning rate at (i.e. convert iterations to epochs)
     # To convert iterations to epochs, divide iterations by the number of iterations per epoch
     # The paper trains for 120,000 iterations with a batch size of 32, decays after 80,000 and 100,000 iterations
-    epochs = iterations // (len(train_dataset) // 32)
+    epochs = 2
     decay_lr_at = [it // (len(train_dataset) // 32) for it in decay_lr_at]
 
     # Epochs

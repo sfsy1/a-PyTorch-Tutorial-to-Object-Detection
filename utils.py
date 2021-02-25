@@ -8,20 +8,17 @@ import torchvision.transforms.functional as FT
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Label map
-voc_labels = ('aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus', 'car', 'cat', 'chair', 'cow', 'diningtable',
-              'dog', 'horse', 'motorbike', 'person', 'pottedplant', 'sheep', 'sofa', 'train', 'tvmonitor')
+voc_labels = ('cavity','pa')
 label_map = {k: v + 1 for v, k in enumerate(voc_labels)}
 label_map['background'] = 0
 rev_label_map = {v: k for k, v in label_map.items()}  # Inverse mapping
 
-# Color map for bounding boxes of detected objects from https://sashat.me/2017/01/11/list-of-20-simple-distinct-colors/
-distinct_colors = ['#e6194b', '#3cb44b', '#ffe119', '#0082c8', '#f58231', '#911eb4', '#46f0f0', '#f032e6',
-                   '#d2f53c', '#fabebe', '#008080', '#000080', '#aa6e28', '#fffac8', '#800000', '#aaffc3', '#808000',
-                   '#ffd8b1', '#e6beff', '#808080', '#FFFFFF']
+distinct_colors = ['#e6194b', '#3cb44b', '#000080']
 label_color_map = {k: distinct_colors[i] for i, k in enumerate(label_map.keys())}
 
 
 def parse_annotation(annotation_path):
+
     tree = ET.parse(annotation_path)
     root = tree.getroot()
 
@@ -29,10 +26,8 @@ def parse_annotation(annotation_path):
     labels = list()
     difficulties = list()
     for object in root.iter('object'):
-
         difficult = int(object.find('difficult').text == '1')
-
-        label = object.find('name').text.lower().strip()
+        label = object.find('name').text
         if label not in label_map:
             continue
 
@@ -49,7 +44,7 @@ def parse_annotation(annotation_path):
     return {'boxes': boxes, 'labels': labels, 'difficulties': difficulties}
 
 
-def create_data_lists(voc07_path, voc12_path, output_folder):
+def create_data_lists(data,  output_folder):
     """
     Create lists of images, the bounding boxes and labels of the objects in these images, and save these to file.
 
@@ -57,18 +52,17 @@ def create_data_lists(voc07_path, voc12_path, output_folder):
     :param voc12_path: path to the 'VOC2012' folder
     :param output_folder: folder where the JSONs must be saved
     """
-    voc07_path = os.path.abspath(voc07_path)
-    voc12_path = os.path.abspath(voc12_path)
+    data_path = os.path.abspath(data)
 
     train_images = list()
     train_objects = list()
     n_objects = 0
 
     # Training data
-    for path in [voc07_path, voc12_path]:
+    for path in [data_path]:
 
         # Find IDs of images in training data
-        with open(os.path.join(path, 'ImageSets/Main/trainval.txt')) as f:
+        with open(os.path.join(path, 'train_719_x5.txt')) as f:
             ids = f.read().splitlines()
 
         for id in ids:
@@ -99,17 +93,17 @@ def create_data_lists(voc07_path, voc12_path, output_folder):
     n_objects = 0
 
     # Find IDs of images in the test data
-    with open(os.path.join(voc07_path, 'ImageSets/Main/test.txt')) as f:
+    with open(os.path.join(data_path, 'val_309_x5.txt')) as f:
         ids = f.read().splitlines()
 
     for id in ids:
         # Parse annotation's XML file
-        objects = parse_annotation(os.path.join(voc07_path, 'Annotations', id + '.xml'))
+        objects = parse_annotation(os.path.join(data_path, 'Annotations', id + '.xml'))
         if len(objects) == 0:
             continue
         test_objects.append(objects)
         n_objects += len(objects)
-        test_images.append(os.path.join(voc07_path, 'JPEGImages', id + '.jpg'))
+        test_images.append(os.path.join(data_path, 'JPEGImages', id + '.jpg'))
 
     assert len(test_objects) == len(test_images)
 

@@ -2,14 +2,14 @@ from utils import *
 from datasets import PascalVOCDataset
 from tqdm import tqdm
 from pprint import PrettyPrinter
-
+torch.nn.Module.dump_patches=True
 # Good formatting when printing the APs for each class and mAP
 pp = PrettyPrinter()
 
 # Parameters
-data_folder = './'
+data_folder = 'Conversion\Root\Data\Output'
 keep_difficult = True  # difficult ground truth objects must always be considered in mAP calculation, because these objects DO exist!
-batch_size = 64
+batch_size = 4
 workers = 4
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 checkpoint = './checkpoint_ssd300.pth.tar'
