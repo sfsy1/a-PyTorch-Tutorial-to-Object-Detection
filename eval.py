@@ -9,10 +9,10 @@ pp = PrettyPrinter()
 # Parameters
 data_folder = 'Conversion\Root\Data\Output'
 keep_difficult = True  # difficult ground truth objects must always be considered in mAP calculation, because these objects DO exist!
-batch_size = 4
+batch_size = 1
 workers = 4
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-checkpoint = './checkpoint_ssd300.pth.tar'
+#checkpoint = 'checkpoint_ssd300.pth.tar'
 
 # Load model checkpoint that is to be evaluated
 checkpoint = torch.load(checkpoint)
@@ -38,8 +38,6 @@ def evaluate(test_loader, model):
     :param model: model
     """
 
-    # Make sure it's in eval mode
-    model.eval()
 
     # Lists to store detected and true boxes, labels, scores
     det_boxes = list()
@@ -50,7 +48,8 @@ def evaluate(test_loader, model):
     true_difficulties = list()  # it is necessary to know which objects are 'difficult', see 'calculate_mAP' in utils.py
 
     with torch.no_grad():
-        # Batches
+        # Make sure it's in eval mode
+        model.eval()
         for i, (images, boxes, labels, difficulties) in enumerate(tqdm(test_loader, desc='Evaluating')):
             images = images.to(device)  # (N, 3, 300, 300)
 
@@ -60,7 +59,7 @@ def evaluate(test_loader, model):
             # Detect objects in SSD output
             det_boxes_batch, det_labels_batch, det_scores_batch = model.detect_objects(predicted_locs, predicted_scores,
                                                                                        min_score=0.01, max_overlap=0.45,
-                                                                                       top_k=200)
+                                                                                       top_k=10)
             # Evaluation MUST be at min_score=0.01, max_overlap=0.45, top_k=200 for fair comparision with the paper's results and other repos
 
             # Store this batch's results for mAP calculation
@@ -77,12 +76,12 @@ def evaluate(test_loader, model):
 
         # Calculate mAP
         APs, mAP = calculate_mAP(det_boxes, det_labels, det_scores, true_boxes, true_labels, true_difficulties)
-
+    
     # Print AP for each class
     pp.pprint(APs)
 
     print('\nMean Average Precision (mAP): %.3f' % mAP)
-
+    
 
 if __name__ == '__main__':
     evaluate(test_loader, model)

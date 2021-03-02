@@ -18,12 +18,12 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # Learning parameters
 checkpoint = None  # path to model checkpoint, None if none
 batch_size = 8  # batch size
-iterations = 120000  # number of iterations to train
+#iterations = 449  # number of iterations to train
 workers = 4  # number of workers for loading data in the DataLoader
 print_freq = 200  # print training status every __ batches
 lr = 0.0003  # learning rate
-decay_lr_at = [80000, 100000]  # decay learning rate after these many iterations
-decay_lr_to = 0.1  # decay learning rate to this fraction of the existing learning rate
+#decay_lr_at = [150, 300]  # decay learning rate after these many iterations
+#decay_lr_to = 0.1  # decay learning rate to this fraction of the existing learning rate
 momentum = 0.9  # momentum
 weight_decay = 5e-4  # weight decay
 grad_clip = None  # clip if gradients are exploding, which may happen at larger batch sizes (sometimes at 32) - you will recognize it by a sorting error in the MuliBox loss calculation
@@ -75,15 +75,16 @@ def main():
     # Calculate total number of epochs to train and the epochs to decay learning rate at (i.e. convert iterations to epochs)
     # To convert iterations to epochs, divide iterations by the number of iterations per epoch
     # The paper trains for 120,000 iterations with a batch size of 32, decays after 80,000 and 100,000 iterations
-    epochs = 2
+    epochs = 30
     decay_lr_at = [it // (len(train_dataset) // 32) for it in decay_lr_at]
+    #print(decay_lr_at)
 
     # Epochs
     for epoch in range(start_epoch, epochs):
 
         # Decay learning rate at particular epochs
-        if epoch in decay_lr_at:
-            adjust_learning_rate(optimizer, decay_lr_to)
+        #if epoch in decay_lr_at:
+         #   adjust_learning_rate(optimizer, decay_lr_to)
 
         # One epoch's training
         train(train_loader=train_loader,

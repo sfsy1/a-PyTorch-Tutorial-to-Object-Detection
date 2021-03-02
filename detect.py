@@ -45,6 +45,7 @@ def detect(original_image, min_score, max_overlap, top_k, suppress=None):
     det_boxes, det_labels, det_scores = model.detect_objects(predicted_locs, predicted_scores, min_score=min_score,
                                                              max_overlap=max_overlap, top_k=top_k)
 
+
     # Move detections to the CPU
     det_boxes = det_boxes[0].to('cpu')
 
@@ -77,26 +78,26 @@ def detect(original_image, min_score, max_overlap, top_k, suppress=None):
         draw.rectangle(xy=box_location, outline=label_color_map[det_labels[i]])
         draw.rectangle(xy=[l + 1. for l in box_location], outline=label_color_map[
             det_labels[i]])  # a second rectangle at an offset of 1 pixel to increase line thickness
-        # draw.rectangle(xy=[l + 2. for l in box_location], outline=label_color_map[
-        #     det_labels[i]])  # a third rectangle at an offset of 1 pixel to increase line thickness
-        # draw.rectangle(xy=[l + 3. for l in box_location], outline=label_color_map[
-        #     det_labels[i]])  # a fourth rectangle at an offset of 1 pixel to increase line thickness
+       # draw.rectangle(xy=[l + 2. for l in box_location], outline=label_color_map[
+        #    det_labels[i]])  # a third rectangle at an offset of 1 pixel to increase line thickness
+       # draw.rectangle(xy=[l + 3. for l in box_location], outline=label_color_map[
+        #    det_labels[i]])  # a fourth rectangle at an offset of 1 pixel to increase line thickness
 
         # Text
-        text_size = font.getsize(det_labels[i].upper())
-        text_location = [box_location[0] + 2., box_location[1] - text_size[1]]
-        textbox_location = [box_location[0], box_location[1] - text_size[1], box_location[0] + text_size[0] + 4.,
-                            box_location[1]]
-        draw.rectangle(xy=textbox_location, fill=label_color_map[det_labels[i]])
-        draw.text(xy=text_location, text=det_labels[i].upper(), fill='white',
-                  font=font)
+        #text_size = font.getsize(det_labels[i].upper())
+        #text_location = [box_location[0] + 2., box_location[1] - text_size[1]]
+        #textbox_location = [box_location[0], box_location[1] - text_size[1], box_location[0] + text_size[0] + 4.,
+                            #box_location[1]]
+        #draw.rectangle(xy=textbox_location, fill=label_color_map[det_labels[i]])
+        #draw.text(xy=text_location, text=det_labels[i].upper(), fill='white',
+         #         font=font)
     del draw
-
+    
     return annotated_image
 
 
 if __name__ == '__main__':
-    img_path = 'Conversion\Root\Data\JPEGImages/File197.jpg'
+    img_path = 'Conversion\Root\Data\JPEGImages/000042_rot90.jpg'
     original_image = Image.open(img_path, mode='r')
     original_image = original_image.convert('RGB')
-    detect(original_image, min_score=0.2, max_overlap=0.5, top_k=200).show()
+    detect(original_image, min_score=0.2, max_overlap=0.5, top_k=3).show()
