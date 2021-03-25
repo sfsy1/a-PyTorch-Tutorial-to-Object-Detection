@@ -97,7 +97,7 @@ def detect(original_image, min_score, max_overlap, top_k, suppress=None):
 
 
 if __name__ == '__main__':
-    img_path = 'Conversion\Root\Data\JPEGImages/000042_rot90.jpg'
+    img_path = 'Conversion/Root/Data/JPEGImages/000042_rot90.jpg'
     original_image = Image.open(img_path, mode='r')
     original_image = original_image.convert('RGB')
     detect(original_image, min_score=0.2, max_overlap=0.5, top_k=3).show()

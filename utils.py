@@ -62,7 +62,7 @@ def create_data_lists(data,  output_folder):
     for path in [data_path]:
 
         # Find IDs of images in training data
-        with open(os.path.join(path, 'train_719_x5.txt')) as f:
+        with open(os.path.join(path, 'train_877_x5.txt')) as f:
             ids = f.read().splitlines()
 
         for id in ids:
@@ -93,7 +93,7 @@ def create_data_lists(data,  output_folder):
     n_objects = 0
 
     # Find IDs of images in the test data
-    with open(os.path.join(data_path, 'val_309_x5.txt')) as f:
+    with open(os.path.join(data_path, 'val_376_x5.txt')) as f:
         ids = f.read().splitlines()
 
     for id in ids:

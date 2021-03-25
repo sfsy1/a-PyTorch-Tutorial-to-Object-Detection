@@ -436,6 +436,7 @@ class SSD300(nn.Module):
         :param top_k: if there are a lot of resulting detection across all classes, keep only the top 'k'
         :return: detections (boxes, labels, and scores), lists of length batch_size
         """
+        
         batch_size = predicted_locs.size(0)
         n_priors = self.priors_cxcy.size(0)
         predicted_scores = F.softmax(predicted_scores, dim=2)  # (N, 8732, n_classes)
@@ -473,7 +474,7 @@ class SSD300(nn.Module):
                 # Sort predicted boxes and scores by scores
                 class_scores, sort_ind = class_scores.sort(dim=0, descending=True)  # (n_qualified), (n_min_score)
                 class_decoded_locs = class_decoded_locs[sort_ind]  # (n_min_score, 4)
-
+                
                 # Find the overlap between predicted boxes
                 overlap = find_jaccard_overlap(class_decoded_locs, class_decoded_locs)  # (n_qualified, n_min_score)
 
