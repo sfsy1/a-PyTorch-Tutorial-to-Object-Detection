@@ -20,6 +20,7 @@ distinct_colors = ['#e6194b', '#3cb44b', '#ffe119', '#0082c8', '#f58231', '#911e
                    '#ffd8b1', '#e6beff', '#808080', '#FFFFFF']
 label_color_map = {k: distinct_colors[i] for i, k in enumerate(label_map.keys())}
 
+INPUT_DIMENSION = (1408, 704)
 
 def parse_annotation(annotation_path):
     tree = ET.parse(annotation_path)
@@ -627,7 +628,7 @@ def transform(image, boxes, labels, difficulties, split):
             new_image, new_boxes = flip(new_image, new_boxes)
 
     # Resize image to (300, 300) - this also converts absolute boundary coordinates to their fractional form
-    new_image, new_boxes = resize(new_image, new_boxes, dims=(300, 300))
+    new_image, new_boxes = resize(new_image, new_boxes, dims=INPUT_DIMENSION)
 
     # Convert PIL image to Torch tensor
     new_image = FT.to_tensor(new_image)

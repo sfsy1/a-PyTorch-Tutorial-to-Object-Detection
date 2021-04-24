@@ -71,6 +71,7 @@ class VGGBase(nn.Module):
         out = F.relu(self.conv4_1(out))  # (N, 512, 38, 38)
         out = F.relu(self.conv4_2(out))  # (N, 512, 38, 38)
         out = F.relu(self.conv4_3(out))  # (N, 512, 38, 38)
+        print("4_3", out.shape)
         conv4_3_feats = out  # (N, 512, 38, 38)
         out = self.pool4(out)  # (N, 512, 19, 19)
 
@@ -82,6 +83,7 @@ class VGGBase(nn.Module):
         out = F.relu(self.conv6(out))  # (N, 1024, 19, 19)
 
         conv7_feats = F.relu(self.conv7(out))  # (N, 1024, 19, 19)
+        print("7", conv7_feats.shape)
 
         # Lower-level feature maps
         return conv4_3_feats, conv7_feats
@@ -170,18 +172,18 @@ class AuxiliaryConvolutions(nn.Module):
         out = F.relu(self.conv8_1(conv7_feats))  # (N, 256, 19, 19)
         out = F.relu(self.conv8_2(out))  # (N, 512, 10, 10)
         conv8_2_feats = out  # (N, 512, 10, 10)
-
+        print("8_2", out.shape)
         out = F.relu(self.conv9_1(out))  # (N, 128, 10, 10)
         out = F.relu(self.conv9_2(out))  # (N, 256, 5, 5)
         conv9_2_feats = out  # (N, 256, 5, 5)
-
+        print("9_2", out.shape)
         out = F.relu(self.conv10_1(out))  # (N, 128, 5, 5)
         out = F.relu(self.conv10_2(out))  # (N, 256, 3, 3)
         conv10_2_feats = out  # (N, 256, 3, 3)
-
+        print("10_2", out.shape)
         out = F.relu(self.conv11_1(out))  # (N, 128, 3, 3)
         conv11_2_feats = F.relu(self.conv11_2(out))  # (N, 256, 1, 1)
-
+        print("11_2", out.shape)
         # Higher-level feature maps
         return conv8_2_feats, conv9_2_feats, conv10_2_feats, conv11_2_feats
 
@@ -374,12 +376,12 @@ class SSD300(nn.Module):
 
         :return: prior boxes in center-size coordinates, a tensor of dimensions (8732, 4)
         """
-        fmap_dims = {'conv4_3': 38,
-                     'conv7': 19,
-                     'conv8_2': 10,
-                     'conv9_2': 5,
-                     'conv10_2': 3,
-                     'conv11_2': 1}
+        fmap_dims = {'conv4_3': 88,
+                     'conv7': 44,
+                     'conv8_2': 22,
+                     'conv9_2': 11,
+                     'conv10_2': 9,
+                     'conv11_2': 9}
 
         obj_scales = {'conv4_3': 0.1,
                       'conv7': 0.2,
@@ -402,7 +404,7 @@ class SSD300(nn.Module):
         for k, fmap in enumerate(fmaps):
             for i in range(fmap_dims[fmap]):
                 for j in range(fmap_dims[fmap]):
-                    cx = (j + 0.5) / fmap_dims[fmap]
+                    cx = (j + 0.5) / (fmap_dims[fmap] * 2)
                     cy = (i + 0.5) / fmap_dims[fmap]
 
                     for ratio in aspect_ratios[fmap]:
@@ -444,7 +446,9 @@ class SSD300(nn.Module):
         all_images_boxes = list()
         all_images_labels = list()
         all_images_scores = list()
-
+        print("predicted_locs", predicted_locs.size())
+        print("predicted_scores", predicted_scores.size())
+        print("n_priors", n_priors.size())
         assert n_priors == predicted_locs.size(1) == predicted_scores.size(1)
 
         for i in range(batch_size):
